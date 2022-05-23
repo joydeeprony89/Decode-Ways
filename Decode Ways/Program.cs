@@ -12,19 +12,18 @@ namespace Decode_Ways
     }
     public int NumDecodings(string s)
     {
-      int?[] memorization = new int?[s.Length + 1];
-      int? result = NumDecoding_Helper(s, s.Length, memorization);
+      if (s.Length == 0) return 0;
+      int?[] memorization = new int?[s.Length];
+      int? result = NumDecoding_Helper(s, 0, memorization);
       return result.Value;
     }
 
     int? NumDecoding_Helper(string s, int k, int?[] memorization)
     {
-      // base conditions
-      // 1. if the length is 0
-      if (k == 0) return 1;
-      // 2. if starts with 0
-      int firstCharacterIndex = s.Length - k;
-      if (s[firstCharacterIndex] == '0') return 0;
+      // base conditions - reached to the end of the string
+      if (k == s.Length) return 1;
+      // if starts with 0
+      if (s[k] == '0') return 0;
 
       // check memorization already have the value
       if (memorization[k] != null)
@@ -32,10 +31,11 @@ namespace Decode_Ways
         return memorization[k];
       }
 
-      int? count = NumDecoding_Helper(s, k - 1, memorization);
-      if (k >= 2 && Convert.ToInt32(s.Substring(firstCharacterIndex, 2)) <= 26)
+      int? count = NumDecoding_Helper(s, k + 1, memorization);
+      // condition for two digit. first digit can be 1 or 2 and second digit should be less than 7 as the max int value is 26 for Z.
+      if (k < s.Length - 1 && (s[k] == '1' || s[k] == '2' && s[k+1] < '7'))
       {
-        count += NumDecoding_Helper(s, k - 2, memorization);
+        count += NumDecoding_Helper(s, k + 2, memorization);
       }
       memorization[k] = count;
       return count;
